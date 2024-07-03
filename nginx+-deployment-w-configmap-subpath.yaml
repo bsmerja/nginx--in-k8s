@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-apigw
+  namespace: apigw
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      imagePullSecrets:
+      - name: <your-cr-pull-secret>
+      containers:
+      - name: nginx
+        image: <your-nginx-plus-image>
+        ports:
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+        volumeMounts:
+        - mountPath: /etc/nginx/nginx.conf # mount nginx-conf volumn to /etc/nginx
+          subPath: nginx.conf
+          readOnly: true
+          name: nginx-conf
+        - mountPath: /etc/nginx/conf.d # mount nginx-conf volumn to /etc/nginx
+          readOnly: true
+          name: nginx-conf-2
+        - mountPath: /etc/nginx/ssl # mount nginx-conf volumn to /etc/nginx
+          readOnly: true
+          name: nplus-secret
+        - mountPath: /etc/nginx/ssl2 # mount nginx-conf volumn to /etc/nginx
+          readOnly: true
+          name: nplus-secret2
+        - mountPath: /var/log/nginx
+          name: log
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      - name: nplus-secret
+        secret:
+          secretName: nplus-secret # place cert and key on/etc/nginx/ssl
+          items:
+            - key: tls.crt
+              path: wild.f5selab.in.crt
+            - key: tls.key
+              path: wild.f5selab.in.key
+      - name: nplus-secret2
+        secret:
+          secretName: nplus-test-secret # place cert and key on/etc/nginx/ssl2
+          items:
+            - key: tls.crt
+              path: wild2.f5selab.in.crt
+            - key: tls.key
+              path: wild2.f5selab.in.key
+      - name: nginx-conf-2
+        configMap:
+          name: nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
+          items:
+            - key: virtualhost.conf
+              path: virtualhost.conf # dig directory
+            - key: demo.f5selab.in-jwt.conf
+              path: demo.f5selab.in-jwt.conf # dig directory
+            - key: default-443.conf
+              path: default-443.conf # dig directory
+            - key: default-80.conf
+              path: default-80.conf # dig directory
+      - name: log
+        emptyDir: {}
+
