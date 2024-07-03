@@ -7,5 +7,6 @@ curl -s https://private-registry.nginx.com/v2/nginx-plus/base/tags/list --key ./
 ```
 ``Note:`` For image with agent and rootless image please [follow](https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-docker/#pulling-the-image) 
 
-4. Create config Maps
-5. Create you
+4. Upload your image to private repo.
+5. Create your secret for downloading form privae
+6. Create you
