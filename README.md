@@ -6,5 +6,6 @@
 curl -s https://private-registry.nginx.com/v2/nginx-plus/base/tags/list --key ./nginx-repo.key --cert ./nginx-repo.cer  | jq
 ```
 ``Note:`` For image with agent and rootless image please [follow](https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-docker/#pulling-the-image) 
+
 4. Create config Maps
 5. Create you
